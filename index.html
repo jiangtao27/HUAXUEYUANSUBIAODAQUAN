@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>元素周期表深度探索 | Kimi AI增强版</title>
     <meta name="description" content="交互式元素周期表，包含118种元素的详细信息、电子云动画和Kimi AI化学助手">
     <meta name="theme-color" content="#0F172A">
@@ -270,6 +270,8 @@
             gap: 3px;
             max-width: 1400px;
             margin: 0 auto;
+            transform-origin: center top;
+            transition: transform 0.1s ease-out;
         }
         
         @media (max-width: 1024px) {
@@ -515,10 +517,37 @@
                 font-size: 9px;
             }
         }
+
+        /* 缩放提示 */
+        .zoom-indicator {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0, 0, 0, 0.8);
+            color: #E86C3A;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 100;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            border: 1px solid rgba(232, 108, 58, 0.3);
+        }
+        .zoom-indicator.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
     </style>
-<base target="_blank">
 </head>
 <body class="bg-dark text-gray-100 font-sans overflow-x-hidden overscroll-none">
+
+    <!-- 缩放提示 -->
+    <div id="zoomIndicator" class="zoom-indicator">
+        缩放: <span id="zoomLevel">100%</span>
+    </div>
 
     <!-- 背景动画 -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
@@ -539,7 +568,7 @@
                         <h1 class="text-lg md:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-red-400">
                             Elements Pro
                         </h1>
-                        <p class="text-[10px] md:text-xs text-gray-400 hidden sm:block">Kimi AI增强型深度元素周期表</p>
+                        <p class="text-[10px] md:text-xs text-gray-400 hidden sm:block">双指缩放查看详情 • Kimi AI增强</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2 md:gap-4">
@@ -592,8 +621,8 @@
             </div>
         </div>
 
-        <!-- 周期表容器 - 移动端可横向滚动 -->
-        <div class="overflow-x-auto pb-4 -mx-2 px-2 md:mx-0 md:px-0 scroll-snap-x">
+        <!-- 周期表容器 - 支持双指缩放 -->
+        <div id="tableContainer" class="overflow-x-auto pb-4 -mx-2 px-2 md:mx-0 md:px-0 scroll-snap-x touch-pinch-zoom">
             <div id="periodicTable" class="periodic-grid mb-8 min-w-[360px] md:min-w-[1000px] lg:min-w-0">
                 <!-- 元素将通过JavaScript动态生成 -->
             </div>
@@ -601,7 +630,7 @@
 
         <!-- 移动端提示 -->
         <div class="md:hidden text-center text-xs text-gray-500 mb-4">
-            左右滑动查看完整周期表 • 点击查看详情
+            双指缩放查看详情 • 左右滑动浏览 • 点击查看元素
         </div>
 
     </main>
@@ -969,6 +998,108 @@
             }
         }
 
+        // 双指缩放管理器
+        class PinchZoomManager {
+            constructor() {
+                this.tableContainer = document.getElementById('tableContainer');
+                this.periodicTable = document.getElementById('periodicTable');
+                this.zoomIndicator = document.getElementById('zoomIndicator');
+                this.zoomLevel = document.getElementById('zoomLevel');
+                
+                this.initialDistance = 0;
+                this.currentScale = 1;
+                this.lastScale = 1;
+                this.minScale = 0.5;
+                this.maxScale = 3;
+                this.isPinching = false;
+                this.hideTimeout = null;
+                
+                this.init();
+            }
+            
+            init() {
+                // 触摸事件
+                this.tableContainer.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
+                this.tableContainer.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
+                this.tableContainer.addEventListener('touchend', (e) => this.handleTouchEnd(e));
+                this.tableContainer.addEventListener('touchcancel', (e) => this.handleTouchEnd(e));
+                
+                // 防止双击缩放
+                this.tableContainer.addEventListener('dblclick', (e) => e.preventDefault());
+            }
+            
+            getDistance(touches) {
+                const dx = touches[0].clientX - touches[1].clientX;
+                const dy = touches[0].clientY - touches[1].clientY;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
+            
+            handleTouchStart(e) {
+                if (e.touches.length === 2) {
+                    this.isPinching = true;
+                    this.initialDistance = this.getDistance(e.touches);
+                    this.lastScale = this.currentScale;
+                    
+                    // 防止页面滚动
+                    e.preventDefault();
+                }
+            }
+            
+            handleTouchMove(e) {
+                if (e.touches.length === 2 && this.isPinching) {
+                    const currentDistance = this.getDistance(e.touches);
+                    const scale = currentDistance / this.initialDistance;
+                    
+                    // 计算新缩放级别
+                    let newScale = this.lastScale * scale;
+                    newScale = Math.max(this.minScale, Math.min(this.maxScale, newScale));
+                    
+                    this.currentScale = newScale;
+                    this.applyZoom();
+                    
+                    // 显示缩放指示器
+                    this.showZoomIndicator();
+                    
+                    // 防止页面滚动
+                    e.preventDefault();
+                }
+            }
+            
+            handleTouchEnd(e) {
+                if (e.touches.length < 2) {
+                    this.isPinching = false;
+                    this.initialDistance = 0;
+                }
+            }
+            
+            applyZoom() {
+                this.periodicTable.style.transform = `scale(${this.currentScale})`;
+                this.periodicTable.style.transformOrigin = 'center top';
+            }
+            
+            showZoomIndicator() {
+                this.zoomLevel.textContent = Math.round(this.currentScale * 100) + '%';
+                this.zoomIndicator.classList.add('visible');
+                
+                // 清除之前的定时器
+                if (this.hideTimeout) {
+                    clearTimeout(this.hideTimeout);
+                }
+                
+                // 2秒后隐藏
+                this.hideTimeout = setTimeout(() => {
+                    this.zoomIndicator.classList.remove('visible');
+                }, 2000);
+            }
+            
+            reset() {
+                this.currentScale = 1;
+                this.lastScale = 1;
+                this.applyZoom();
+                this.showZoomIndicator();
+            }
+        }
+
         // 元素数据（完整118个）
         const elements = [
             { number: 1, symbol: 'H', name: '氢', mass: '1.008', category: 'nonmetal', group: 1, period: 1, config: '1s¹', electronegativity: '2.20', radius: '53', melting: '-259.1', boiling: '-252.9', discoverer: 'Henry Cavendish', year: '1766', desc: '宇宙中最丰富的元素，占所有普通物质量的75%。' },
@@ -1095,6 +1226,7 @@
         let currentAtomAnimation = null;
         let currentTypewriter = null;
         let resizeManager = null;
+        let pinchZoomManager = null;
         let chatHistory = [];
 
         // 初始化
@@ -1104,9 +1236,17 @@
             updateHistoryCount();
             resizeManager = new ResizeManager();
             resizeManager.restoreWidth();
+            pinchZoomManager = new PinchZoomManager();
             
             // 移动端长按复制支持
             initLongPressCopy();
+            
+            // 添加双击重置缩放功能
+            document.getElementById('tableContainer').addEventListener('dblclick', () => {
+                if (pinchZoomManager) {
+                    pinchZoomManager.reset();
+                }
+            });
         });
 
         // 移动端长按复制功能
