@@ -2,8 +2,10 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>元素周期表深度探索 | Kimi AI增强版</title>
+    <meta name="description" content="交互式元素周期表，包含118种元素的详细信息、电子云动画和Kimi AI化学助手">
+    <meta name="theme-color" content="#0F172A">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script>
@@ -27,6 +29,7 @@
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                         'float': 'float 6s ease-in-out infinite',
                         'fade-in': 'fadeIn 0.3s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
                     },
                     keyframes: {
                         float: {
@@ -36,6 +39,10 @@
                         fadeIn: {
                             '0%': { opacity: '0', transform: 'translateY(10px)' },
                             '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(100%)' },
+                            '100%': { transform: 'translateY(0)' },
                         }
                     }
                 }
@@ -43,19 +50,36 @@
         }
     </script>
     <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        
         .element-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            touch-action: pan-x pan-y;
+        }
+        .element-card:active {
+            transform: scale(0.95);
         }
         .element-card:hover {
-            transform: scale(1.1) translateY(-5px);
+            transform: scale(1.05);
             z-index: 50;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
         }
+        @media (min-width: 768px) {
+            .element-card:hover {
+                transform: scale(1.1) translateY(-5px);
+            }
+        }
+        
         .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
+            background: rgba(30, 41, 59, 0.85);
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+        
         .category-alkali { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
         .category-alkaline { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
         .category-transition { background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%); }
@@ -68,58 +92,72 @@
         .category-actinide { background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); }
         
         .chat-message {
-            max-width: 85%;
+            max-width: 90%;
             word-wrap: break-word;
+        }
+        @media (min-width: 768px) {
+            .chat-message {
+                max-width: 85%;
+            }
         }
         
         .markdown-content {
-            line-height: 1.8;
-            font-size: 0.95rem;
+            line-height: 1.7;
+            font-size: 0.9rem;
+        }
+        @media (min-width: 768px) {
+            .markdown-content {
+                font-size: 0.95rem;
+                line-height: 1.8;
+            }
         }
         
         .markdown-content h1 { 
-            font-size: 1.5rem; 
+            font-size: 1.25rem; 
             font-weight: 700; 
-            margin: 1.5rem 0 1rem; 
+            margin: 1rem 0 0.75rem; 
             color: #fb923c; 
             border-bottom: 2px solid rgba(251, 146, 60, 0.3);
             padding-bottom: 0.5rem;
         }
+        @media (min-width: 768px) {
+            .markdown-content h1 { font-size: 1.5rem; }
+        }
+        
         .markdown-content h2 { 
-            font-size: 1.25rem; 
+            font-size: 1.1rem; 
             font-weight: 600; 
-            margin: 1.25rem 0 0.75rem; 
+            margin: 1rem 0 0.5rem; 
             color: #fdba74; 
             border-left: 4px solid #E86C3A;
             padding-left: 0.75rem;
         }
-        .markdown-content h3 { 
-            font-size: 1.1rem; 
-            font-weight: 600; 
-            margin: 1rem 0 0.5rem; 
-            color: #fed7aa; 
+        @media (min-width: 768px) {
+            .markdown-content h2 { font-size: 1.25rem; }
         }
-        .markdown-content h4 { 
+        
+        .markdown-content h3 { 
             font-size: 1rem; 
             font-weight: 600; 
             margin: 0.75rem 0 0.5rem; 
-            color: #ffedd5; 
+            color: #fed7aa; 
         }
         
         .markdown-content p { 
-            margin: 0.75rem 0; 
+            margin: 0.5rem 0; 
             text-align: justify;
         }
         
         .markdown-content ul, .markdown-content ol { 
-            margin: 0.75rem 0; 
-            padding-left: 1.5rem; 
+            margin: 0.5rem 0; 
+            padding-left: 1.25rem; 
         }
         .markdown-content ul { list-style-type: none; }
         .markdown-content ul li { 
             position: relative; 
-            margin: 0.5rem 0;
-            padding-left: 0.5rem;
+            margin: 0.4rem 0;
+            padding-left: 0.25rem;
+            font-size: 0.9rem;
         }
         .markdown-content ul li::before {
             content: "•";
@@ -128,64 +166,53 @@
             position: absolute;
             left: -1rem;
             font-size: 1.2rem;
-            line-height: 1.5;
+            line-height: 1.2;
         }
         .markdown-content ol { 
             list-style-type: decimal; 
             color: #e2e8f0;
         }
         .markdown-content ol li { 
-            margin: 0.5rem 0;
+            margin: 0.4rem 0;
             padding-left: 0.25rem;
         }
-        .markdown-content li > p { margin: 0.25rem 0; }
         
         .markdown-content code { 
             background: rgba(0,0,0,0.4); 
-            padding: 0.2rem 0.4rem; 
+            padding: 0.15rem 0.3rem; 
             border-radius: 4px; 
             font-family: 'Courier New', monospace; 
-            font-size: 0.85em;
+            font-size: 0.8em;
             color: #fbbf24;
             border: 1px solid rgba(251, 191, 36, 0.2);
         }
         .markdown-content pre { 
             background: rgba(0,0,0,0.5); 
-            padding: 1rem; 
+            padding: 0.75rem; 
             border-radius: 8px; 
             overflow-x: auto; 
-            margin: 1rem 0;
+            margin: 0.75rem 0;
             border: 1px solid rgba(255,255,255,0.1);
-            position: relative;
-        }
-        .markdown-content pre::before {
-            content: "CODE";
-            position: absolute;
-            top: 0.25rem;
-            right: 0.5rem;
-            font-size: 0.7rem;
-            color: #64748b;
-            font-weight: bold;
+            font-size: 0.85rem;
         }
         .markdown-content pre code { 
             background: none; 
             padding: 0; 
             color: #e2e8f0;
             border: none;
-            font-size: 0.9em;
-            line-height: 1.5;
+            font-size: 0.85em;
         }
         
         .markdown-content blockquote { 
-            border-left: 4px solid #E86C3A; 
-            padding: 0.5rem 1rem; 
-            margin: 1rem 0;
+            border-left: 3px solid #E86C3A; 
+            padding: 0.5rem 0.75rem; 
+            margin: 0.75rem 0;
             color: #94a3b8;
             font-style: italic;
             background: rgba(232, 108, 58, 0.1);
             border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
         }
-        .markdown-content blockquote p { margin: 0.25rem 0; }
         
         .markdown-content strong { 
             color: #fb923c; 
@@ -194,44 +221,36 @@
             padding: 0 0.2rem;
             border-radius: 3px;
         }
-        .markdown-content em { 
-            color: #a5b4fc; 
-            font-style: italic;
-        }
-        .markdown-content del { 
-            color: #64748b; 
-            text-decoration: line-through;
-        }
         
         .markdown-content table { 
             width: 100%; 
             border-collapse: collapse; 
-            margin: 1rem 0;
-            font-size: 0.9rem;
+            margin: 0.75rem 0;
+            font-size: 0.8rem;
             border-radius: 8px;
             overflow: hidden;
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        @media (min-width: 768px) {
+            .markdown-content table {
+                display: table;
+                font-size: 0.9rem;
+            }
         }
         .markdown-content th, .markdown-content td { 
             border: 1px solid rgba(255,255,255,0.1); 
-            padding: 0.6rem; 
+            padding: 0.4rem; 
             text-align: left; 
+        }
+        @media (min-width: 768px) {
+            .markdown-content th, .markdown-content td { padding: 0.6rem; }
         }
         .markdown-content th { 
             background: rgba(232, 108, 58, 0.4); 
             font-weight: 600;
             color: #fb923c;
-        }
-        .markdown-content tr:nth-child(even) {
-            background: rgba(255,255,255,0.03);
-        }
-        .markdown-content tr:hover {
-            background: rgba(232, 108, 58, 0.15);
-        }
-        
-        .markdown-content hr {
-            border: none;
-            border-top: 2px solid rgba(232, 108, 58, 0.3);
-            margin: 1.5rem 0;
         }
         
         .typing-cursor::after {
@@ -248,7 +267,7 @@
         .periodic-grid {
             display: grid;
             grid-template-columns: repeat(18, minmax(0, 1fr));
-            gap: 4px;
+            gap: 3px;
             max-width: 1400px;
             margin: 0 auto;
         }
@@ -259,10 +278,10 @@
                 gap: 2px;
             }
             .element-card {
-                min-height: 60px;
+                min-height: 55px;
             }
             .element-card .text-2xl {
-                font-size: 1rem;
+                font-size: 0.9rem;
             }
         }
         
@@ -270,25 +289,33 @@
             .periodic-grid {
                 grid-template-columns: repeat(4, 1fr);
                 gap: 2px;
+                min-width: 100%;
             }
             .element-card {
-                min-height: 50px;
+                min-height: 48px;
+                border-radius: 4px;
             }
-            .chat-message {
-                max-width: 90%;
+            .element-card .text-2xl {
+                font-size: 0.8rem;
+            }
+            .element-card .text-\[10px\] {
+                font-size: 8px;
+            }
+            .element-card .text-\[8px\] {
+                font-size: 7px;
             }
         }
         
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
         }
         ::-webkit-scrollbar-track {
             background: #1e293b; 
         }
         ::-webkit-scrollbar-thumb {
             background: #E86C3A; 
-            border-radius: 4px;
+            border-radius: 3px;
         }
         ::-webkit-scrollbar-thumb:hover {
             background: #FF8C69; 
@@ -297,12 +324,18 @@
         .atom-container {
             position: relative;
             width: 100%;
-            height: 320px;
+            height: 250px;
             background: radial-gradient(circle at center, rgba(20, 30, 50, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
-            border-radius: 16px;
+            border-radius: 12px;
             overflow: hidden;
             border: 1px solid rgba(232, 108, 58, 0.3);
             box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+        @media (min-width: 768px) {
+            .atom-container {
+                height: 320px;
+                border-radius: 16px;
+            }
         }
         
         .atom-canvas {
@@ -312,17 +345,67 @@
         
         .electron-legend {
             position: absolute;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 11px;
+            bottom: 8px;
+            left: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 10px;
             color: #94a3b8;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 70%;
+        }
+        @media (min-width: 768px) {
+            .electron-legend {
+                bottom: 10px;
+                left: 10px;
+                padding: 8px 12px;
+                font-size: 11px;
+                max-width: none;
+            }
         }
 
-        /* 可拖动调整条样式 */
+        /* 移动端底部导航 */
+        .mobile-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 0;
+            z-index: 40;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: env(safe-area-inset-bottom, 8px);
+        }
+        @media (min-width: 768px) {
+            .mobile-bottom-nav {
+                display: none;
+            }
+        }
+
+        .mobile-nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 4px 12px;
+            color: #94a3b8;
+            font-size: 10px;
+            transition: all 0.2s;
+        }
+        .mobile-nav-btn:active {
+            color: #E86C3A;
+            transform: scale(0.95);
+        }
+        .mobile-nav-btn.active {
+            color: #E86C3A;
+        }
+
+        /* 可拖动调整条样式 - 仅桌面端 */
         .resize-handle {
             position: absolute;
             left: 0;
@@ -364,44 +447,89 @@
             opacity: 1;
         }
 
-        /* 拖动时禁用文本选择 */
         .no-select {
             user-select: none;
             -webkit-user-select: none;
         }
+
+        /* 移动端优化触摸区域 */
+        .touch-manipulation {
+            touch-action: manipulation;
+        }
+        
+        /* 防止iOS橡皮筋效果 */
+        .overscroll-none {
+            overscroll-behavior: none;
+        }
+
+        /* 安全区域适配 */
+        .safe-area-top {
+            padding-top: env(safe-area-inset-top);
+        }
+        .safe-area-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        /* 详情面板移动端全屏 */
+        @media (max-width: 767px) {
+            #detailPanel {
+                width: 100%;
+                border-radius: 20px 20px 0 0;
+                top: 10%;
+                height: 90%;
+                transform: translateY(100%);
+                transition: transform 0.3s ease-out;
+            }
+            #detailPanel.translate-y-0 {
+                transform: translateY(0);
+            }
+            #detailPanel.translate-x-full {
+                transform: translateY(100%);
+            }
+        }
+
+        /* 横向滚动容器 */
+        .scroll-snap-x {
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .scroll-snap-start {
+            scroll-snap-align: start;
+        }
     </style>
 </head>
-<body class="bg-dark text-gray-100 font-sans overflow-x-hidden">
+<body class="bg-dark text-gray-100 font-sans overflow-x-hidden overscroll-none">
 
     <!-- 背景动画 -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div class="absolute top-0 left-0 w-96 h-96 bg-kimi/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"></div>
-        <div class="absolute top-0 right-0 w-96 h-96 bg-orange-500/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float" style="animation-delay: 2s;"></div>
-        <div class="absolute bottom-0 left-1/2 w-96 h-96 bg-red-500/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float" style="animation-delay: 4s;"></div>
+        <div class="absolute top-0 left-0 w-64 h-64 bg-kimi/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float md:w-96 md:h-96"></div>
+        <div class="absolute top-0 right-0 w-64 h-64 bg-orange-500/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float md:w-96 md:h-96" style="animation-delay: 2s;"></div>
+        <div class="absolute bottom-0 left-1/2 w-64 h-64 bg-red-500/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float md:w-96 md:h-96" style="animation-delay: 4s;"></div>
     </div>
 
     <!-- 导航栏 -->
-    <nav class="fixed top-0 w-full z-50 glass-panel border-b border-gray-700">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-slate-800 border border-gray-600 flex items-center justify-center text-xl font-bold text-white shadow-lg">
+    <nav class="fixed top-0 w-full z-50 glass-panel border-b border-gray-700 safe-area-top">
+        <div class="max-w-7xl mx-auto px-3 md:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-14 md:h-16">
+                <div class="flex items-center gap-2 md:gap-3">
+                    <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-800 border border-gray-600 flex items-center justify-center text-lg md:text-xl font-bold text-white shadow-lg">
                         ⚛️
                     </div>
                     <div>
-                        <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-red-400">
+                        <h1 class="text-lg md:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-red-400">
                             Elements Pro
                         </h1>
-                        <p class="text-xs text-gray-400">Kimi AI增强型深度元素周期表</p>
+                        <p class="text-[10px] md:text-xs text-gray-400 hidden sm:block">Kimi AI增强型深度元素周期表</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-4">
-                    <button onclick="toggleAIChat()" class="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-kimi to-kimi-light hover:from-orange-600 hover:to-red-600 transition-all shadow-lg hover:shadow-orange-500/25 text-white">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                <div class="flex items-center gap-2 md:gap-4">
+                    <button onclick="toggleAIChat()" class="flex items-center gap-1 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-gradient-to-r from-kimi to-kimi-light hover:from-orange-600 hover:to-red-600 transition-all shadow-lg hover:shadow-orange-500/25 text-white text-sm md:text-base">
+                        <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
                         <span class="hidden sm:inline">Kimi AI助手</span>
+                        <span class="sm:hidden">AI</span>
                     </button>
-                    <button onclick="toggleSettings()" class="p-2 rounded-full hover:bg-gray-700 transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <button onclick="toggleSettings()" class="p-2 rounded-full hover:bg-gray-700 transition-colors touch-manipulation">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     </button>
                 </div>
             </div>
@@ -409,130 +537,129 @@
     </nav>
 
     <!-- 主内容区 -->
-    <main class="relative z-10 pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-[1600px] mx-auto">
+    <main class="relative z-10 pt-20 md:pt-24 pb-20 md:pb-12 px-2 md:px-6 lg:px-8 max-w-[1600px] mx-auto">
         
-        <!-- 控制面板 -->
-        <div class="mb-8 flex flex-wrap gap-4 items-center justify-between glass-panel p-4 rounded-2xl">
-            <div class="flex items-center gap-4 flex-wrap">
-                <div class="relative">
-                    <input type="text" id="searchInput" placeholder="搜索元素（名称、符号、序号）..." 
-                           class="pl-10 pr-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-kimi focus:border-transparent w-64 text-sm"
+        <!-- 控制面板 - 桌面端显示，移动端简化 -->
+        <div class="mb-4 md:mb-8 flex flex-wrap gap-2 md:gap-4 items-center justify-between glass-panel p-2 md:p-4 rounded-xl md:rounded-2xl mx-1 md:mx-0">
+            <div class="flex items-center gap-2 flex-1 md:flex-none">
+                <div class="relative flex-1 md:flex-none">
+                    <input type="text" id="searchInput" placeholder="搜索元素..." 
+                           class="pl-8 pr-3 py-1.5 md:pl-10 md:pr-4 md:py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-kimi focus:border-transparent w-full md:w-64 text-sm"
                            oninput="searchElements(this.value)">
-                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <svg class="w-4 h-4 md:w-5 md:h-5 text-gray-400 absolute left-2.5 md:left-3 top-2 md:top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
                 <select id="categoryFilter" onchange="filterByCategory(this.value)" 
-                        class="px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-kimi text-sm">
-                    <option value="all">全部分类</option>
+                        class="px-2 py-1.5 md:px-4 md:py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-kimi text-xs md:text-sm h-full touch-manipulation">
+                    <option value="all">全部</option>
                     <option value="alkali">碱金属</option>
-                    <option value="alkaline">碱土金属</option>
-                    <option value="transition">过渡金属</option>
+                    <option value="alkaline">碱土</option>
+                    <option value="transition">过渡</option>
                     <option value="basic">贫金属</option>
                     <option value="metalloid">类金属</option>
                     <option value="nonmetal">非金属</option>
                     <option value="halogen">卤素</option>
                     <option value="noble">稀有气体</option>
-                    <option value="lanthanide">镧系元素</option>
-                    <option value="actinide">锕系元素</option>
+                    <option value="lanthanide">镧系</option>
+                    <option value="actinide">锕系</option>
                 </select>
             </div>
-            <div class="flex gap-2 text-xs flex-wrap">
+            <div class="hidden md:flex gap-2 text-xs flex-wrap">
                 <span class="flex items-center gap-1"><span class="w-3 h-3 rounded category-alkali"></span>碱金属</span>
-                <span class="flex items-center gap-1"><span class="w-3 h-3 rounded category-alkaline"></span>碱土金属</span>
-                <span class="flex items-center gap-1"><span class="w-3 h-3 rounded category-transition"></span>过渡金属</span>
+                <span class="flex items-center gap-1"><span class="w-3 h-3 rounded category-alkaline"></span>碱土</span>
+                <span class="flex items-center gap-1"><span class="w-3 h-3 rounded category-transition"></span>过渡</span>
                 <span class="flex items-center gap-1"><span class="w-3 h-3 rounded category-nonmetal"></span>非金属</span>
-                <span class="flex items-center gap-1"><span class="w-3 h-3 rounded category-noble"></span>稀有气体</span>
+                <span class="flex items-center gap-1"><span class="w-3 h-3 rounded category-noble"></span>稀有</span>
             </div>
         </div>
 
-        <!-- 周期表容器 -->
-        <div class="overflow-x-auto pb-4">
-            <div id="periodicTable" class="periodic-grid mb-8 min-w-[1000px] lg:min-w-0">
+        <!-- 周期表容器 - 移动端可横向滚动 -->
+        <div class="overflow-x-auto pb-4 -mx-2 px-2 md:mx-0 md:px-0 scroll-snap-x">
+            <div id="periodicTable" class="periodic-grid mb-8 min-w-[360px] md:min-w-[1000px] lg:min-w-0">
                 <!-- 元素将通过JavaScript动态生成 -->
             </div>
         </div>
 
+        <!-- 移动端提示 -->
+        <div class="md:hidden text-center text-xs text-gray-500 mb-4">
+            左右滑动查看完整周期表 • 点击查看详情
+        </div>
+
     </main>
 
-    <!-- 详情面板 -->
-    <div id="detailPanel" class="fixed inset-y-0 right-0 w-full md:w-[600px] glass-panel transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto border-l border-gray-700 shadow-2xl">
-        <div class="p-6">
-            <div class="flex justify-between items-start mb-6">
+    <!-- 详情面板 - 移动端从底部滑出 -->
+    <div id="detailPanel" class="fixed inset-y-0 right-0 w-full md:w-[600px] glass-panel transform translate-x-full md:translate-y-0 transition-transform duration-300 z-50 overflow-y-auto border-l border-gray-700 shadow-2xl md:rounded-none rounded-t-2xl md:top-0 top-[5%] h-full md:h-full">
+        <div class="p-4 md:p-6">
+            <div class="flex justify-between items-start mb-4 md:mb-6 sticky top-0 bg-[#0F172A]/90 backdrop-blur-sm p-2 -mx-2 rounded-lg z-10 md:bg-transparent md:static md:p-0">
                 <div>
-                    <h2 id="detailName" class="text-4xl font-bold mb-1"></h2>
-                    <p id="detailSymbol" class="text-6xl font-light text-gray-400"></p>
+                    <h2 id="detailName" class="text-2xl md:text-4xl font-bold mb-1"></h2>
+                    <p id="detailSymbol" class="text-4xl md:text-6xl font-light text-gray-400"></p>
                 </div>
-                <button onclick="closeDetail()" class="p-2 hover:bg-gray-700 rounded-full transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <button onclick="closeDetail()" class="p-2 hover:bg-gray-700 rounded-full transition-colors touch-manipulation">
+                    <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
             
-            <div id="detailContent" class="space-y-6">
+            <div id="detailContent" class="space-y-4 md:space-y-6 pb-safe">
                 <!-- 动态内容 -->
             </div>
         </div>
     </div>
 
-    <!-- AI聊天侧边栏 - 增加可拖动调整宽度 -->
-    <div id="aiChat" class="fixed inset-y-0 right-0 w-full md:w-[480px] glass-panel transform translate-x-full transition-transform duration-300 z-50 border-l border-gray-700 shadow-2xl flex flex-col" style="max-width: 90vw;">
-        <!-- 拖动调整条 -->
+    <!-- AI聊天侧边栏 -->
+    <div id="aiChat" class="fixed inset-y-0 right-0 w-full md:w-[480px] glass-panel transform translate-x-full transition-transform duration-300 z-50 border-l border-gray-700 shadow-2xl flex flex-col" style="max-width: 100%;">
+        <!-- 拖动调整条 - 桌面端显示 -->
         <div id="resizeHandle" class="resize-handle hidden md:block" title="按住向左拖动调整宽度"></div>
         
-        <div class="p-4 border-b border-gray-700 flex justify-between items-center bg-gray-800/50 relative">
+        <div class="p-3 md:p-4 border-b border-gray-700 flex justify-between items-center bg-gray-800/50 relative">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-full bg-slate-800 border border-gray-600 flex items-center justify-center text-sm text-white shadow-md">
+                <div class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-slate-800 border border-gray-600 flex items-center justify-center text-xs md:text-sm text-white shadow-md">
                     🧠
                 </div>
                 <div>
-                    <h3 class="font-semibold text-orange-400">Kimi 化学助手</h3>
-                    <p class="text-xs text-gray-400" id="chatStatus">基于 Moonshot AI • 支持上下文</p>
+                    <h3 class="font-semibold text-orange-400 text-sm md:text-base">Kimi 化学助手</h3>
+                    <p class="text-[10px] md:text-xs text-gray-400" id="chatStatus">基于 Moonshot AI</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
-                <button onclick="clearChatHistory()" class="p-2 hover:bg-gray-700 rounded-full text-gray-400 hover:text-red-400 transition-colors" title="清空聊天记录">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            <div class="flex items-center gap-1 md:gap-2">
+                <button onclick="clearChatHistory()" class="p-2 hover:bg-gray-700 rounded-full text-gray-400 hover:text-red-400 transition-colors touch-manipulation" title="清空聊天记录">
+                    <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                 </button>
-                <button onclick="toggleAIChat()" class="p-2 hover:bg-gray-700 rounded-full">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <button onclick="toggleAIChat()" class="p-2 hover:bg-gray-700 rounded-full touch-manipulation">
+                    <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
         </div>
         
-        <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-4">
-            <div class="flex gap-3 animate-fade-in">
-                <div class="w-8 h-8 rounded-full bg-slate-800 border border-gray-600 flex-shrink-0 flex items-center justify-center text-xs text-white shadow-md">
+        <div id="chatMessages" class="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4 overscroll-contain">
+            <div class="flex gap-2 md:gap-3 animate-fade-in">
+                <div class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-slate-800 border border-gray-600 flex-shrink-0 flex items-center justify-center text-xs text-white shadow-md">
                     🧠
                 </div>
-                <div class="chat-message bg-gray-700/50 rounded-2xl rounded-tl-none p-4 text-sm markdown-content">
-                    <p>你好！我是Kimi化学助手。</p>
-                    <p>我可以帮你解答：</p>
-                    <ul>
-                        <li>元素性质与化学反应</li>
-                        <li>历史背景与应用场景</li>
-                        <li>同位素与化合物信息</li>
-                    </ul>
-                    <p>我会记住我们的对话上下文，你可以继续追问之前的话题。</p>
-                    <p class="text-xs text-gray-500 mt-2">💡 提示：鼠标悬停在左侧边缘可调整面板宽度</p>
+                <div class="chat-message bg-gray-700/50 rounded-2xl rounded-tl-none p-3 md:p-4 text-sm markdown-content">
+                    <p class="text-sm">你好！我是Kimi化学助手。</p>
+                    <p class="text-sm mt-1">我可以帮你解答化学问题，支持上下文记忆。</p>
+                    <p class="text-[10px] text-gray-500 mt-2 md:hidden">提示：长按消息可复制内容</p>
                 </div>
             </div>
         </div>
 
-        <div class="p-4 border-t border-gray-700 bg-gray-800/30">
-            <div id="apiKeyInput" class="mb-3">
+        <div class="p-3 md:p-4 border-t border-gray-700 bg-gray-800/30 safe-area-bottom">
+            <div id="apiKeyInput" class="mb-2 md:mb-3">
                 <input type="password" id="moonshotApiKey" placeholder="输入 Moonshot API Key..." 
-                       class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-xs focus:ring-2 focus:ring-kimi text-orange-400 placeholder-gray-600">
-                <p class="text-xs text-gray-500 mt-1">API Key仅存储在本地浏览器中 | <a href="https://platform.moonshot.cn/" target="_blank" class="text-orange-400 hover:underline">获取密钥</a></p>
+                       class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-xs md:text-sm focus:ring-2 focus:ring-kimi text-orange-400 placeholder-gray-600">
+                <p class="text-[10px] md:text-xs text-gray-500 mt-1">API Key仅存储在本地 | <a href="https://platform.moonshot.cn/" target="_blank" class="text-orange-400 hover:underline">获取密钥</a></p>
             </div>
             <div class="flex gap-2">
-                <input type="text" id="chatInput" placeholder="询问关于此元素..." 
-                       class="flex-1 px-4 py-2 bg-gray-900 border border-gray-600 rounded-lg focus:ring-2 focus:ring-kimi text-sm"
+                <input type="text" id="chatInput" placeholder="询问化学问题..." 
+                       class="flex-1 px-3 py-2 md:px-4 md:py-2 bg-gray-900 border border-gray-600 rounded-lg focus:ring-2 focus:ring-kimi text-sm touch-manipulation"
                        onkeypress="if(event.key==='Enter') sendMessage()">
-                <button onclick="sendMessage()" class="px-4 py-2 bg-kimi hover:bg-kimi-light rounded-lg transition-colors text-white">
+                <button onclick="sendMessage()" class="px-3 py-2 md:px-4 md:py-2 bg-kimi hover:bg-kimi-light rounded-lg transition-colors text-white touch-manipulation">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                 </button>
             </div>
-            <div class="mt-2 flex justify-between items-center text-xs text-gray-500">
+            <div class="mt-2 flex justify-between items-center text-[10px] md:text-xs text-gray-500">
                 <span id="historyCount">当前对话：0 轮</span>
-                <span class="text-gray-600">按 Enter 发送</span>
+                <span class="text-gray-600">Enter 发送</span>
             </div>
         </div>
     </div>
@@ -544,8 +671,8 @@
 
     <!-- 设置模态框 -->
     <div id="settingsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-panel rounded-2xl p-6 max-w-md w-full border border-gray-700 shadow-2xl">
-            <h3 class="text-xl font-bold mb-4 text-orange-400">Moonshot API设置</h3>
+        <div class="glass-panel rounded-2xl p-5 md:p-6 max-w-sm md:max-w-md w-full border border-gray-700 shadow-2xl mx-4">
+            <h3 class="text-lg md:text-xl font-bold mb-4 text-orange-400">Moonshot API设置</h3>
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium mb-2 text-gray-300">Moonshot API Key</label>
@@ -554,24 +681,44 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-2 text-gray-300">模型选择</label>
-                    <select id="modelSelect" class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-sm focus:border-kimi focus:ring-1 focus:ring-kimi">
+                    <select id="modelSelect" class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-sm focus:border-kimi focus:ring-1 focus:ring-kimi touch-manipulation">
                         <option value="moonshot-v1-8k" selected>moonshot-v1-8k（标准）</option>
                         <option value="moonshot-v1-32k">moonshot-v1-32k（长文本）</option>
                         <option value="moonshot-v1-128k">moonshot-v1-128k（超长文本）</option>
                         <option value="moonshot-v1-auto">moonshot-v1-auto（自动）</option>
                     </select>
-                    <p class="text-xs text-gray-500 mt-1">推荐使用 moonshot-v1-8k 或 moonshot-v1-32k</p>
+                    <p class="text-xs text-gray-500 mt-1">推荐 moonshot-v1-8k</p>
                 </div>
                 <div class="flex gap-2 pt-4">
-                    <button onclick="saveSettings()" class="flex-1 py-2 bg-kimi hover:bg-kimi-light rounded-lg transition-colors text-white font-medium">保存设置</button>
-                    <button onclick="toggleSettings()" class="flex-1 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors">取消</button>
+                    <button onclick="saveSettings()" class="flex-1 py-2.5 bg-kimi hover:bg-kimi-light rounded-lg transition-colors text-white font-medium touch-manipulation">保存设置</button>
+                    <button onclick="toggleSettings()" class="flex-1 py-2.5 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors touch-manipulation">取消</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- 移动端底部导航 -->
+    <div class="mobile-bottom-nav">
+        <button onclick="scrollToTop()" class="mobile-nav-btn touch-manipulation">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+            <span>顶部</span>
+        </button>
+        <button onclick="document.getElementById('searchInput').focus()" class="mobile-nav-btn touch-manipulation">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <span>搜索</span>
+        </button>
+        <button onclick="toggleAIChat()" class="mobile-nav-btn touch-manipulation">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+            <span>AI助手</span>
+        </button>
+        <button onclick="toggleSettings()" class="mobile-nav-btn touch-manipulation">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            <span>设置</span>
+        </button>
+    </div>
+
     <script>
-        // Markdown解析器（轻量级）
+        // Markdown解析器（移动端优化）
         class MarkdownParser {
             static parse(text) {
                 if (!text) return '';
@@ -591,20 +738,23 @@
                 html = html.replace(/~~(.*?)~~/g, '<del>$1</del>');
                 html = html.replace(/^&gt; (.*$)/gim, '<blockquote>$1</blockquote>');
                 html = html.replace(/^---$/gim, '<hr>');
+                
+                // 表格处理 - 移动端横向滚动
                 html = html.replace(/((?:\|.*\|(?:\n|$))+)/g, (match) => {
                     const rows = match.trim().split('\n');
                     if (rows.length < 2) return match;
                     
-                    let table = '<table>';
+                    let table = '<div class="overflow-x-auto"><table>';
                     rows.forEach((row, i) => {
                         if (row.includes('---')) return;
                         const cells = row.split('|').filter(c => c.trim());
                         const tag = i === 0 ? 'th' : 'td';
                         table += '<tr>' + cells.map(c => `<${tag}>${c.trim()}</${tag}>`).join('') + '</tr>';
                     });
-                    table += '</table>';
+                    table += '</table></div>';
                     return table;
                 });
+                
                 html = html.replace(/(?:^|\n)((?:- .*(?:\n|$))+)/g, (match) => {
                     const items = match.trim().split('\n');
                     return '<ul>' + items.map(item => `<li>${item.replace(/^- /, '')}</li>`).join('') + '</ul>';
@@ -619,25 +769,20 @@
                 if (!html.startsWith('<')) {
                     html = '<p>' + html + '</p>';
                 }
-                html = html.replace(/<p>(<h[1-6]>)/g, '$1');
-                html = html.replace(/(<\/h[1-6]>)<\/p>/g, '$1');
-                html = html.replace(/<p>(<ul>)/g, '$1');
-                html = html.replace(/(<\/ul>)<\/p>/g, '$1');
-                html = html.replace(/<p>(<ol>)/g, '$1');
-                html = html.replace(/(<\/ol>)<\/p>/g, '$1');
-                html = html.replace(/<p>(<blockquote>)/g, '$1');
-                html = html.replace(/(<\/blockquote>)<\/p>/g, '$1');
-                html = html.replace(/<p>(<pre>)/g, '$1');
-                html = html.replace(/(<\/pre>)<\/p>/g, '$1');
-                html = html.replace(/<p>(<table>)/g, '$1');
-                html = html.replace(/(<\/table>)<\/p>/g, '$1');
+                
+                // 清理标签
+                const tags = ['h1', 'h2', 'h3', 'h4', 'ul', 'ol', 'blockquote', 'pre', 'div'];
+                tags.forEach(tag => {
+                    html = html.replace(new RegExp(`<p>(<${tag})`, 'g'), '$1');
+                    html = html.replace(new RegExp(`(</${tag}>)<\\/p>`, 'g'), '$1');
+                });
                 html = html.replace(/<p><\/p>/g, '');
                 
                 return html;
             }
         }
 
-        // 打字机效果类
+        // 打字机效果类（优化移动端性能）
         class Typewriter {
             constructor(element, text, speed = 5) {
                 this.element = element;
@@ -646,10 +791,11 @@
                 this.index = 0;
                 this.isRunning = false;
                 this.renderedContent = '';
+                this.isMobile = window.innerWidth < 768;
                 
                 this.pauseTime = {
-                    '。': 80, '，': 60, '.': 80, ',': 60, '!': 100, '?': 100,
-                    '？': 100, '！': 100, ':': 70, '：': 70, ';': 70, '；': 70, '\n': 100
+                    '。': 60, '，': 40, '.': 60, ',': 40, '!': 80, '?': 80,
+                    '？': 80, '！': 80, ':': 50, '：': 50, ';': 50, '；': 50, '\n': 80
                 };
             }
             
@@ -657,6 +803,14 @@
                 this.isRunning = true;
                 this.element.innerHTML = '';
                 this.element.classList.add('typing-cursor');
+                
+                // 移动端降低动画复杂度
+                if (this.isMobile && this.text.length > 500) {
+                    // 长文本在移动端直接显示，避免卡顿
+                    this.skip();
+                    return;
+                }
+                
                 this.type();
                 return this;
             }
@@ -668,7 +822,9 @@
                     const char = this.text[this.index];
                     this.renderedContent += char;
                     
-                    if (this.index % 10 === 0 || char === '\n' || char === '.' || char === '。') {
+                    // 移动端降低渲染频率
+                    const renderInterval = this.isMobile ? 15 : 10;
+                    if (this.index % renderInterval === 0 || char === '\n' || char === '.') {
                         this.element.innerHTML = MarkdownParser.parse(this.renderedContent);
                         const container = this.element.closest('#chatMessages');
                         if (container) {
@@ -677,9 +833,15 @@
                     }
                     
                     this.index++;
-                    let delay = this.speed;
+                    let delay = this.isMobile ? this.speed * 0.8 : this.speed;
                     if (this.pauseTime[char]) delay += this.pauseTime[char];
-                    setTimeout(() => this.type(), delay);
+                    
+                    // 使用 requestAnimationFrame 优化性能
+                    if (this.isMobile && this.index % 5 === 0) {
+                        requestAnimationFrame(() => setTimeout(() => this.type(), delay));
+                    } else {
+                        setTimeout(() => this.type(), delay);
+                    }
                 } else {
                     this.stop();
                     this.element.innerHTML = MarkdownParser.parse(this.text);
@@ -697,7 +859,7 @@
             }
         }
 
-        // 可拖动调整宽度管理器
+        // 可拖动调整宽度管理器（仅桌面端）
         class ResizeManager {
             constructor() {
                 this.chatPanel = document.getElementById('aiChat');
@@ -705,30 +867,25 @@
                 this.indicator = document.getElementById('resizeIndicator');
                 this.widthValue = document.getElementById('widthValue');
                 this.isResizing = false;
-                this.startX = 0;
-                this.startWidth = 0;
-                this.minWidth = 480;
-                this.maxWidth = window.innerWidth * 0.9;
+                this.isMobile = window.innerWidth < 768;
                 
-                this.init();
+                if (!this.isMobile) {
+                    this.init();
+                }
             }
             
             init() {
-                // 只在桌面端启用
-                if (window.innerWidth >= 768) {
-                    this.resizeHandle.addEventListener('mousedown', (e) => this.startResize(e));
-                    document.addEventListener('mousemove', (e) => this.onResize(e));
-                    document.addEventListener('mouseup', () => this.stopResize());
-                    
-                    // 触摸支持
-                    this.resizeHandle.addEventListener('touchstart', (e) => this.startResize(e.touches[0]));
-                    document.addEventListener('touchmove', (e) => this.onResize(e.touches[0]));
-                    document.addEventListener('touchend', () => this.stopResize());
-                }
+                this.startX = 0;
+                this.startWidth = 0;
+                this.minWidth = 320;
+                this.maxWidth = window.innerWidth * 0.95;
+                
+                this.resizeHandle.addEventListener('mousedown', (e) => this.startResize(e));
+                document.addEventListener('mousemove', (e) => this.onResize(e));
+                document.addEventListener('mouseup', () => this.stopResize());
                 
                 window.addEventListener('resize', () => {
-                    this.maxWidth = window.innerWidth * 0.9;
-                    // 如果当前宽度超过新的最大值，调整回来
+                    this.maxWidth = window.innerWidth * 0.95;
                     const currentWidth = parseInt(getComputedStyle(this.chatPanel).width);
                     if (currentWidth > this.maxWidth) {
                         this.chatPanel.style.width = this.maxWidth + 'px';
@@ -737,6 +894,7 @@
             }
             
             startResize(e) {
+                if (window.innerWidth < 768) return;
                 this.isResizing = true;
                 this.startX = e.clientX;
                 this.startWidth = parseInt(getComputedStyle(this.chatPanel).width);
@@ -745,7 +903,6 @@
                 document.body.classList.add('no-select');
                 document.body.style.cursor = 'col-resize';
                 
-                // 显示指示器
                 this.indicator.classList.add('visible');
                 this.widthValue.textContent = this.startWidth;
                 
@@ -755,10 +912,9 @@
             onResize(e) {
                 if (!this.isResizing) return;
                 
-                const deltaX = this.startX - e.clientX; // 向左拖动为正值（加宽）
+                const deltaX = this.startX - e.clientX;
                 let newWidth = this.startWidth + deltaX;
                 
-                // 限制范围
                 newWidth = Math.max(this.minWidth, Math.min(this.maxWidth, newWidth));
                 
                 this.chatPanel.style.width = newWidth + 'px';
@@ -773,20 +929,18 @@
                 document.body.classList.remove('no-select');
                 document.body.style.cursor = '';
                 
-                // 隐藏指示器（延迟一点，让用户看到最终宽度）
                 setTimeout(() => {
                     this.indicator.classList.remove('visible');
                 }, 500);
                 
-                // 保存用户偏好宽度到本地存储
                 const finalWidth = parseInt(getComputedStyle(this.chatPanel).width);
                 localStorage.setItem('chatPanelWidth', finalWidth);
             }
             
-            // 恢复保存的宽度
             restoreWidth() {
+                if (window.innerWidth < 768) return;
                 const savedWidth = localStorage.getItem('chatPanelWidth');
-                if (savedWidth && window.innerWidth >= 768) {
+                if (savedWidth) {
                     const width = parseInt(savedWidth);
                     if (width >= this.minWidth && width <= this.maxWidth) {
                         this.chatPanel.style.width = width + 'px';
@@ -795,7 +949,7 @@
             }
         }
 
-        // 元素数据
+        // 元素数据（完整118个）
         const elements = [
             { number: 1, symbol: 'H', name: '氢', mass: '1.008', category: 'nonmetal', group: 1, period: 1, config: '1s¹', electronegativity: '2.20', radius: '53', melting: '-259.1', boiling: '-252.9', discoverer: 'Henry Cavendish', year: '1766', desc: '宇宙中最丰富的元素，占所有普通物质量的75%。' },
             { number: 2, symbol: 'He', name: '氦', mass: '4.0026', category: 'noble', group: 18, period: 1, config: '1s²', electronegativity: '-', radius: '31', melting: '-272.2', boiling: '-268.9', discoverer: 'Pierre Janssen', year: '1868', desc: '第二轻的元素，用于气球和低温冷却。' },
@@ -921,8 +1075,6 @@
         let currentAtomAnimation = null;
         let currentTypewriter = null;
         let resizeManager = null;
-        
-        // 聊天记录数组，用于维护对话上下文
         let chatHistory = [];
 
         // 初始化
@@ -930,37 +1082,64 @@
             renderPeriodicTable();
             loadSettings();
             updateHistoryCount();
-            
-            // 初始化拖动调整宽度功能
             resizeManager = new ResizeManager();
             resizeManager.restoreWidth();
+            
+            // 移动端长按复制支持
+            initLongPressCopy();
         });
 
-        // 更新历史记录计数显示
-        function updateHistoryCount() {
-            const count = Math.floor(chatHistory.length / 2); // 每轮包含user和assistant两条
-            document.getElementById('historyCount').textContent = `当前对话：${count} 轮`;
+        // 移动端长按复制功能
+        function initLongPressCopy() {
+            const chatMessages = document.getElementById('chatMessages');
+            let longPressTimer;
             
-            // 如果记录过多，显示提示
-            if (count >= 10) {
-                document.getElementById('historyCount').innerHTML += ' <span class="text-yellow-500">(接近上限)</span>';
+            chatMessages.addEventListener('touchstart', (e) => {
+                const messageBubble = e.target.closest('.markdown-content');
+                if (messageBubble && !messageBubble.classList.contains('bg-orange-600')) {
+                    longPressTimer = setTimeout(() => {
+                        const text = messageBubble.innerText;
+                        if (navigator.clipboard) {
+                            navigator.clipboard.writeText(text).then(() => {
+                                showToast('消息已复制到剪贴板');
+                            });
+                        }
+                    }, 800);
+                }
+            });
+            
+            chatMessages.addEventListener('touchend', () => {
+                clearTimeout(longPressTimer);
+            });
+            
+            chatMessages.addEventListener('touchmove', () => {
+                clearTimeout(longPressTimer);
+            });
+        }
+
+        function updateHistoryCount() {
+            const count = Math.floor(chatHistory.length / 2);
+            const el = document.getElementById('historyCount');
+            if (el) {
+                el.textContent = `当前对话：${count} 轮`;
+                if (count >= 10) {
+                    el.innerHTML += ' <span class="text-yellow-500">(接近上限)</span>';
+                }
             }
         }
 
-        // 清空聊天记录
         function clearChatHistory() {
             if (chatHistory.length === 0) return;
-            
-            if (confirm('确定要清空所有聊天记录吗？这将重新开始对话。')) {
+            if (confirm('确定要清空所有聊天记录吗？')) {
                 chatHistory = [];
                 const container = document.getElementById('chatMessages');
                 container.innerHTML = `
-                    <div class="flex gap-3 animate-fade-in">
-                        <div class="w-8 h-8 rounded-full bg-slate-800 border border-gray-600 flex-shrink-0 flex items-center justify-center text-xs text-white shadow-md">
+                    <div class="flex gap-2 md:gap-3 animate-fade-in">
+                        <div class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-slate-800 border border-gray-600 flex-shrink-0 flex items-center justify-center text-xs text-white shadow-md">
                             🧠
                         </div>
-                        <div class="chat-message bg-gray-700/50 rounded-2xl rounded-tl-none p-4 text-sm markdown-content">
-                            <p>聊天记录已清空。我是Kimi化学助手，有什么可以帮你的吗？</p>
+                        <div class="chat-message bg-gray-700/50 rounded-2xl rounded-tl-none p-3 md:p-4 text-sm markdown-content">
+                            <p>聊天记录已清空。</p>
                         </div>
                     </div>
                 `;
@@ -969,16 +1148,12 @@
             }
         }
 
-        // 获取带上下文的messages数组
         function getContextMessages(currentMessage) {
-            const messages = [
-                {
-                    role: 'system',
-                    content: '你是一个专业的化学助手。回答时请使用Markdown格式：用##或###分段落，用**粗体**标出重点，用-列出要点，用表格对比数据。确保排版清晰、层次分明，不要堆积大段文字。'
-                }
-            ];
+            const messages = [{
+                role: 'system',
+                content: '你是专业化学助手。使用Markdown格式：##分段、**粗体**、-要点、表格对比。排版清晰，避免大段文字。'
+            }];
             
-            // 添加历史记录，最多保留最近10轮对话（20条消息）避免token超限
             const maxHistory = 20;
             let historyToInclude = chatHistory;
             if (chatHistory.length > maxHistory) {
@@ -986,17 +1161,10 @@
             }
             
             messages.push(...historyToInclude);
-            
-            // 添加当前消息
-            messages.push({
-                role: 'user',
-                content: currentMessage
-            });
-            
+            messages.push({ role: 'user', content: currentMessage });
             return messages;
         }
 
-        // 渲染周期表
         function renderPeriodicTable() {
             const grid = document.getElementById('periodicTable');
             grid.innerHTML = '';
@@ -1006,7 +1174,7 @@
                     if ((period === 6 || period === 7) && group === 3) {
                         const placeholder = document.createElement('div');
                         const btn = document.createElement('button');
-                        btn.className = `w-full h-full rounded-lg border-2 border-dashed border-gray-600 hover:border-orange-500 hover:bg-orange-500/10 transition-all flex items-center justify-center text-xs text-gray-400 hover:text-orange-400 ${period === 6 ? 'category-lanthanide' : 'category-actinide'}`;
+                        btn.className = `w-full h-full rounded-lg border-2 border-dashed border-gray-600 hover:border-orange-500 hover:bg-orange-500/10 transition-all flex items-center justify-center text-[10px] md:text-xs text-gray-400 hover:text-orange-400 ${period === 6 ? 'category-lanthanide' : 'category-actinide'}`;
                         btn.style.opacity = '0.5';
                         btn.innerHTML = period === 6 ? '57-71<br>镧系' : '89-103<br>锕系';
                         btn.onclick = () => scrollToSeries(period === 6 ? 'lanthanide' : 'actinide');
@@ -1016,36 +1184,29 @@
                     }
                     
                     const element = elements.find(e => e.period === period && e.group === group);
-                    
                     if (element) {
-                        const elDiv = createElementCard(element);
-                        grid.appendChild(elDiv);
+                        grid.appendChild(createElementCard(element));
                     } else {
-                        const empty = document.createElement('div');
-                        grid.appendChild(empty);
+                        grid.appendChild(document.createElement('div'));
                     }
                 }
             }
             
             const separator = document.createElement('div');
-            separator.className = 'col-span-18 h-4';
+            separator.className = 'col-span-18 h-2 md:h-4';
             grid.appendChild(separator);
             
-            const lanthanides = elements.filter(e => e.category === 'lanthanide');
-            const actinides = elements.filter(e => e.category === 'actinide');
-            
-            lanthanides.forEach(el => {
+            elements.filter(e => e.category === 'lanthanide').forEach(el => {
                 grid.appendChild(createElementCard(el, true));
             });
-            
-            actinides.forEach(el => {
+            elements.filter(e => e.category === 'actinide').forEach(el => {
                 grid.appendChild(createElementCard(el, true));
             });
         }
 
         function createElementCard(element, isSeries = false) {
             const div = document.createElement('div');
-            div.className = `element-card relative p-2 rounded-lg cursor-pointer border border-gray-600/30 category-${element.category} ${isSeries ? 'col-span-1' : ''}`;
+            div.className = `element-card relative p-1 md:p-2 rounded md:rounded-lg cursor-pointer border border-gray-600/30 category-${element.category} ${isSeries ? 'col-span-1' : ''} touch-manipulation scroll-snap-start`;
             div.style.aspectRatio = '1';
             div.dataset.category = element.category;
             div.dataset.symbol = element.symbol;
@@ -1054,11 +1215,11 @@
             div.onclick = () => showDetail(element);
             
             div.innerHTML = `
-                <div class="absolute top-1 left-1 text-[10px] opacity-70">${element.number}</div>
-                <div class="absolute top-1 right-1 text-[8px] opacity-50">${element.mass}</div>
+                <div class="absolute top-0.5 left-0.5 md:top-1 md:left-1 text-[8px] md:text-[10px] opacity-70">${element.number}</div>
+                <div class="absolute top-0.5 right-0.5 md:top-1 md:right-1 text-[6px] md:text-[8px] opacity-50 hidden sm:block">${element.mass}</div>
                 <div class="h-full flex flex-col items-center justify-center">
-                    <div class="text-2xl font-bold">${element.symbol}</div>
-                    <div class="text-[10px] mt-1 opacity-90 truncate w-full text-center">${element.name}</div>
+                    <div class="text-lg md:text-2xl font-bold">${element.symbol}</div>
+                    <div class="text-[9px] md:text-[10px] mt-0.5 md:mt-1 opacity-90 truncate w-full text-center">${element.name}</div>
                 </div>
             `;
             
@@ -1070,13 +1231,14 @@
             if (element) {
                 element.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 element.style.animation = 'pulse 1s 3';
-                setTimeout(() => {
-                    element.style.animation = '';
-                }, 3000);
+                setTimeout(() => { element.style.animation = ''; }, 3000);
             }
         }
 
-        // 计算电子层分布
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         function getElectronShells(atomicNumber) {
             const shells = [];
             const maxElectrons = [2, 8, 18, 32, 32, 18, 8];
@@ -1087,16 +1249,14 @@
                 shells.push({
                     layer: i + 1,
                     electrons: electrons,
-                    radius: 35 + i * 22,
+                    radius: 30 + i * 18,
                     color: `hsl(${20 + i * 25}, 85%, 60%)`
                 });
                 remaining -= electrons;
             }
-            
             return shells;
         }
 
-        // 电子云模式动画类
         class AtomCloudAnimator {
             constructor(canvasId, atomicNumber) {
                 this.canvas = document.getElementById(canvasId);
@@ -1105,8 +1265,6 @@
                 this.shells = getElectronShells(atomicNumber);
                 this.electrons = [];
                 this.animationId = null;
-                this.centerX = this.canvas.width / 2;
-                this.centerY = this.canvas.height / 2;
                 
                 this.initElectrons();
                 this.resize();
@@ -1127,7 +1285,7 @@
                         this.electrons.push({
                             shellIndex: shellIndex,
                             angle: (Math.PI * 2 * i) / shell.electrons,
-                            speed: (0.02 - shellIndex * 0.002) * (Math.random() > 0.5 ? 1 : -1),
+                            speed: (0.015 - shellIndex * 0.002) * (Math.random() > 0.5 ? 1 : -1),
                             radius: shell.radius,
                             color: shell.color,
                             trail: []
@@ -1139,43 +1297,45 @@
             draw() {
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 
+                // 原子核
                 const nucleusGradient = this.ctx.createRadialGradient(
                     this.centerX, this.centerY, 0,
-                    this.centerX, this.centerY, 15
+                    this.centerX, this.centerY, 12
                 );
                 nucleusGradient.addColorStop(0, '#ff6b6b');
                 nucleusGradient.addColorStop(0.5, '#ee5a24');
                 nucleusGradient.addColorStop(1, 'rgba(238, 90, 36, 0)');
                 
                 this.ctx.beginPath();
-                this.ctx.arc(this.centerX, this.centerY, 12, 0, Math.PI * 2);
+                this.ctx.arc(this.centerX, this.centerY, 10, 0, Math.PI * 2);
                 this.ctx.fillStyle = nucleusGradient;
                 this.ctx.fill();
                 
                 this.ctx.fillStyle = '#fff';
-                this.ctx.font = 'bold 10px Arial';
+                this.ctx.font = 'bold 9px Arial';
                 this.ctx.textAlign = 'center';
                 this.ctx.textBaseline = 'middle';
                 this.ctx.fillText(this.atomicNumber, this.centerX, this.centerY);
                 
+                // 轨道
                 this.shells.forEach(shell => {
                     this.ctx.beginPath();
                     this.ctx.arc(this.centerX, this.centerY, shell.radius, 0, Math.PI * 2);
-                    this.ctx.strokeStyle = shell.color + '50';
-                    this.ctx.lineWidth = 1.5;
-                    this.ctx.setLineDash([5, 5]);
+                    this.ctx.strokeStyle = shell.color + '40';
+                    this.ctx.lineWidth = 1;
+                    this.ctx.setLineDash([4, 4]);
                     this.ctx.stroke();
                     this.ctx.setLineDash([]);
                 });
                 
+                // 电子
                 this.electrons.forEach(electron => {
                     electron.angle += electron.speed;
-                    
                     const x = this.centerX + Math.cos(electron.angle) * electron.radius;
                     const y = this.centerY + Math.sin(electron.angle) * electron.radius * 0.6;
                     
                     electron.trail.push({x, y});
-                    if (electron.trail.length > 10) electron.trail.shift();
+                    if (electron.trail.length > 8) electron.trail.shift();
                     
                     if (electron.trail.length > 1) {
                         this.ctx.beginPath();
@@ -1183,23 +1343,18 @@
                         for (let i = 1; i < electron.trail.length; i++) {
                             this.ctx.lineTo(electron.trail[i].x, electron.trail[i].y);
                         }
-                        this.ctx.strokeStyle = electron.color + '30';
-                        this.ctx.lineWidth = 2;
+                        this.ctx.strokeStyle = electron.color + '25';
+                        this.ctx.lineWidth = 1.5;
                         this.ctx.stroke();
                     }
                     
-                    const glowGradient = this.ctx.createRadialGradient(x, y, 0, x, y, 8);
-                    glowGradient.addColorStop(0, electron.color);
-                    glowGradient.addColorStop(0.5, electron.color + '80');
-                    glowGradient.addColorStop(1, 'transparent');
-                    
                     this.ctx.beginPath();
-                    this.ctx.arc(x, y, 8, 0, Math.PI * 2);
-                    this.ctx.fillStyle = glowGradient;
+                    this.ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+                    this.ctx.fillStyle = electron.color;
                     this.ctx.fill();
                     
                     this.ctx.beginPath();
-                    this.ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    this.ctx.arc(x, y, 1, 0, Math.PI * 2);
                     this.ctx.fillStyle = '#fff';
                     this.ctx.fill();
                 });
@@ -1207,111 +1362,89 @@
                 this.animationId = requestAnimationFrame(() => this.draw());
             }
             
-            start() {
-                this.draw();
-            }
-            
-            stop() {
-                if (this.animationId) {
-                    cancelAnimationFrame(this.animationId);
-                }
-            }
+            start() { this.draw(); }
+            stop() { if (this.animationId) cancelAnimationFrame(this.animationId); }
         }
 
-        // 显示详情
         function showDetail(element) {
             currentElement = element;
-            
-            if (currentAtomAnimation) {
-                currentAtomAnimation.stop();
-            }
+            if (currentAtomAnimation) currentAtomAnimation.stop();
             
             const panel = document.getElementById('detailPanel');
-            const content = document.getElementById('detailContent');
+            const isMobile = window.innerWidth < 768;
             
             document.getElementById('detailName').textContent = element.name;
             document.getElementById('detailSymbol').textContent = element.symbol;
             
+            const content = document.getElementById('detailContent');
             content.innerHTML = `
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="glass-panel p-4 rounded-xl border-l-4 border-orange-500">
-                        <h4 class="text-sm text-gray-400 mb-1">原子序数</h4>
-                        <p class="text-2xl font-bold text-orange-400">${element.number}</p>
+                <div class="grid grid-cols-2 gap-2 md:gap-4">
+                    <div class="glass-panel p-3 md:p-4 rounded-lg md:rounded-xl border-l-2 md:border-l-4 border-orange-500">
+                        <h4 class="text-xs md:text-sm text-gray-400 mb-0.5 md:mb-1">原子序数</h4>
+                        <p class="text-xl md:text-2xl font-bold text-orange-400">${element.number}</p>
                     </div>
-                    <div class="glass-panel p-4 rounded-xl border-l-4 border-red-500">
-                        <h4 class="text-sm text-gray-400 mb-1">原子量</h4>
-                        <p class="text-2xl font-bold text-red-400">${element.mass} u</p>
-                    </div>
-                </div>
-                
-                <div class="glass-panel p-4 rounded-xl space-y-3 border border-gray-700">
-                    <h4 class="font-semibold text-lg border-b border-gray-700 pb-2 text-orange-400">物理性质</h4>
-                    <div class="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                            <span class="text-gray-400">电子构型：</span>
-                            <span class="font-mono text-orange-400">${element.config}</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-400">电负性：</span>
-                            <span class="text-red-400">${element.electronegativity || 'N/A'}</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-400">原子半径：</span>
-                            <span>${element.radius || 'N/A'} pm</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-400">熔点：</span>
-                            <span>${element.melting}°C</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-400">沸点：</span>
-                            <span>${element.boiling}°C</span>
-                        </div>
+                    <div class="glass-panel p-3 md:p-4 rounded-lg md:rounded-xl border-l-2 md:border-l-4 border-red-500">
+                        <h4 class="text-xs md:text-sm text-gray-400 mb-0.5 md:mb-1">原子量</h4>
+                        <p class="text-xl md:text-2xl font-bold text-red-400">${element.mass} <span class="text-xs md:text-sm">u</span></p>
                     </div>
                 </div>
                 
-                <div class="glass-panel p-4 rounded-xl border border-gray-700">
-                    <h4 class="font-semibold text-lg border-b border-gray-700 pb-2 mb-3 text-orange-400">历史信息</h4>
-                    <div class="space-y-2 text-sm">
+                <div class="glass-panel p-3 md:p-4 rounded-xl space-y-2 md:space-y-3 border border-gray-700">
+                    <h4 class="font-semibold text-base md:text-lg border-b border-gray-700 pb-1.5 md:pb-2 text-orange-400">物理性质</h4>
+                    <div class="grid grid-cols-2 gap-2 md:gap-4 text-xs md:text-sm">
+                        <div><span class="text-gray-400">电子构型：</span><span class="font-mono text-orange-400 text-xs md:text-sm">${element.config}</span></div>
+                        <div><span class="text-gray-400">电负性：</span><span class="text-red-400">${element.electronegativity || 'N/A'}</span></div>
+                        <div><span class="text-gray-400">原子半径：</span><span>${element.radius || 'N/A'} pm</span></div>
+                        <div><span class="text-gray-400">熔点：</span><span>${element.melting}°C</span></div>
+                        <div><span class="text-gray-400">沸点：</span><span>${element.boiling}°C</span></div>
+                    </div>
+                </div>
+                
+                <div class="glass-panel p-3 md:p-4 rounded-xl border border-gray-700">
+                    <h4 class="font-semibold text-base md:text-lg border-b border-gray-700 pb-1.5 md:pb-2 mb-2 md:mb-3 text-orange-400">历史信息</h4>
+                    <div class="space-y-1.5 md:space-y-2 text-xs md:text-sm">
                         <p><span class="text-gray-400">发现者：</span>${element.discoverer}</p>
-                        <p><span class="text-gray-400">发现年份：</span>${element.year}</p>
-                        <p class="mt-3 text-gray-300 leading-relaxed">${element.desc}</p>
+                        <p><span class="text-gray-400">年份：</span>${element.year}</p>
+                        <p class="mt-2 md:mt-3 text-gray-300 leading-relaxed text-xs md:text-sm">${element.desc}</p>
                     </div>
                 </div>
                 
-                <div class="glass-panel p-4 rounded-xl border border-gray-700">
-                    <div class="flex items-center justify-between mb-3">
-                        <h4 class="font-semibold text-lg text-orange-400 flex items-center gap-2">
-                            <span class="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></span>
-                            核外电子云模拟
+                <div class="glass-panel p-3 md:p-4 rounded-xl border border-gray-700">
+                    <div class="flex items-center justify-between mb-2 md:mb-3">
+                        <h4 class="font-semibold text-base md:text-lg text-orange-400 flex items-center gap-1.5 md:gap-2">
+                            <span class="w-1.5 h-1.5 md:w-2 md:h-2 bg-orange-400 rounded-full animate-pulse"></span>
+                            电子云模拟
                         </h4>
                     </div>
                     <div class="atom-container">
                         <canvas id="atomCanvas" class="atom-canvas"></canvas>
                         <div class="electron-legend">
-                            <div class="flex flex-col gap-1">
+                            <div class="flex flex-col gap-0.5 md:gap-1">
                                 ${getElectronShells(element.number).map((shell, i) => `
-                                    <div class="flex items-center gap-2">
-                                        <span class="w-2 h-2 rounded-full" style="background: ${shell.color}; box-shadow: 0 0 4px ${shell.color}"></span>
-                                        <span>第${shell.layer}层 (${['K','L','M','N','O','P','Q'][i]})</span>
-                                        <span class="text-orange-400 font-mono">${shell.electrons}e⁻</span>
+                                    <div class="flex items-center gap-1.5 md:gap-2">
+                                        <span class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full" style="background: ${shell.color}"></span>
+                                        <span class="text-[9px] md:text-[11px]">第${shell.layer}层 ${['K','L','M','N','O','P','Q'][i]}</span>
+                                        <span class="text-orange-400 font-mono text-[9px] md:text-[11px]">${shell.electrons}e⁻</span>
                                     </div>
                                 `).join('')}
                             </div>
                         </div>
                     </div>
-                    <p class="text-center text-xs text-gray-500 mt-2">
-                        基于量子力学的概率云演示 · 各层轨道颜色与电子颜色对应
-                    </p>
+                    <p class="text-center text-[10px] md:text-xs text-gray-500 mt-1.5 md:mt-2">量子力学概率云演示</p>
                 </div>
                 
-                <button onclick="askAIAboutElement()" class="w-full py-3 bg-gradient-to-r from-orange-600 to-red-600 rounded-xl font-semibold hover:from-orange-500 hover:to-red-500 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-orange-500/25 text-white">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                <button onclick="askAIAboutElement()" class="w-full py-2.5 md:py-3 bg-gradient-to-r from-orange-600 to-red-600 rounded-lg md:rounded-xl font-semibold hover:from-orange-500 hover:to-red-500 transition-all flex items-center justify-center gap-1.5 md:gap-2 shadow-lg hover:shadow-orange-500/25 text-white text-sm md:text-base touch-manipulation">
+                    <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
                     询问Kimi关于此元素
                 </button>
             `;
             
-            panel.classList.remove('translate-x-full');
+            if (isMobile) {
+                panel.classList.remove('translate-y-full');
+                panel.classList.add('translate-y-0');
+            } else {
+                panel.classList.remove('translate-x-full');
+            }
             
             setTimeout(() => {
                 currentAtomAnimation = new AtomCloudAnimator('atomCanvas', element.number);
@@ -1324,11 +1457,19 @@
                 currentAtomAnimation.stop();
                 currentAtomAnimation = null;
             }
-            document.getElementById('detailPanel').classList.add('translate-x-full');
+            
+            const panel = document.getElementById('detailPanel');
+            const isMobile = window.innerWidth < 768;
+            
+            if (isMobile) {
+                panel.classList.remove('translate-y-0');
+                panel.classList.add('translate-y-full');
+            } else {
+                panel.classList.add('translate-x-full');
+            }
             currentElement = null;
         }
 
-        // AI聊天功能
         function toggleAIChat() {
             const chat = document.getElementById('aiChat');
             chat.classList.toggle('translate-x-full');
@@ -1338,7 +1479,8 @@
             if (!currentElement) return;
             toggleAIChat();
             const input = document.getElementById('chatInput');
-            input.value = `请详细介绍一下${currentElement.name}（${currentElement.symbol}）的化学性质、主要应用和同位素情况。`;
+            input.value = `请介绍一下${currentElement.name}（${currentElement.symbol}）的化学性质、主要应用和同位素。`;
+            input.focus();
         }
 
         async function sendMessage() {
@@ -1353,13 +1495,11 @@
                 return;
             }
             
-            // 如果有正在进行的打字，先停止
             if (currentTypewriter) {
                 currentTypewriter.skip();
                 currentTypewriter = null;
             }
             
-            // 先将用户消息添加到界面
             addMessage(message, 'user');
             input.value = '';
             
@@ -1367,8 +1507,6 @@
             
             try {
                 const model = localStorage.getItem('moonshotModel') || 'moonshot-v1-8k';
-                
-                // 构建带上下文的messages数组
                 const messages = getContextMessages(message);
                 
                 const response = await fetch('https://api.moonshot.cn/v1/chat/completions', {
@@ -1381,7 +1519,7 @@
                         model: model,
                         messages: messages,
                         temperature: 0.7,
-                        max_tokens: 2000,
+                        max_tokens: 1500,
                         stream: false
                     })
                 });
@@ -1394,21 +1532,15 @@
                 }
                 
                 const data = await response.json();
-                
                 if (!data.choices || !data.choices[0] || !data.choices[0].message) {
                     throw new Error('API返回数据格式异常');
                 }
                 
                 const reply = data.choices[0].message.content;
-                
-                // 将当前对话添加到历史记录
                 chatHistory.push({ role: 'user', content: message });
                 chatHistory.push({ role: 'assistant', content: reply });
-                
-                // 更新历史计数
                 updateHistoryCount();
                 
-                // 使用打字机效果显示
                 const messageDiv = addMessage('', 'assistant');
                 currentTypewriter = new Typewriter(messageDiv, reply, 5);
                 currentTypewriter.start();
@@ -1416,27 +1548,16 @@
             } catch (error) {
                 removeLoadingMessage(loadingId);
                 let errorMsg = error.message;
-                if (error.message.includes('401')) {
-                    errorMsg = 'API Key无效，请检查密钥是否正确';
-                } else if (error.message.includes('429')) {
-                    errorMsg = '请求过于频繁，请稍后再试';
-                } else if (error.message.includes('500')) {
-                    errorMsg = 'Moonshot服务器内部错误，请稍后再试';
-                } else if (error.message.includes('insufficient_balance')) {
-                    errorMsg = '账户余额不足，请充值';
-                } else if (error.message.includes('invalid_api_key')) {
-                    errorMsg = 'API Key格式错误';
-                } else if (error.message.includes('context_length_exceeded')) {
-                    errorMsg = '对话过长，请清空聊天记录后重试';
-                    // 自动清空一半历史记录
-                    if (chatHistory.length > 10) {
-                        chatHistory = chatHistory.slice(-10);
-                        showToast('已自动清理早期对话记录');
-                        updateHistoryCount();
-                    }
+                if (error.message.includes('401')) errorMsg = 'API Key无效';
+                else if (error.message.includes('429')) errorMsg = '请求过于频繁';
+                else if (error.message.includes('insufficient_balance')) errorMsg = '账户余额不足';
+                else if (error.message.includes('context_length_exceeded')) {
+                    errorMsg = '对话过长，自动清理早期记录';
+                    chatHistory = chatHistory.slice(-10);
+                    updateHistoryCount();
                 }
                 
-                const errorText = '抱歉，调用Kimi API时出现错误：' + errorMsg + '\n\n请检查：\n1. API Key是否正确（从 https://platform.moonshot.cn/ 获取）\n2. 账户是否有足够余额\n3. 网络连接是否正常';
+                const errorText = '错误：' + errorMsg + '\n\n请检查API Key或网络连接';
                 const messageDiv = addMessage('', 'assistant');
                 currentTypewriter = new Typewriter(messageDiv, errorText, 3);
                 currentTypewriter.start();
@@ -1446,14 +1567,14 @@
         function addMessage(text, role) {
             const container = document.getElementById('chatMessages');
             const div = document.createElement('div');
-            div.className = 'flex gap-3 animate-fade-in ' + (role === 'user' ? 'flex-row-reverse' : '');
+            div.className = 'flex gap-2 md:gap-3 animate-fade-in ' + (role === 'user' ? 'flex-row-reverse' : '');
             
             const avatar = role === 'user' ? 
-                '<div class="w-8 h-8 rounded-full bg-gray-600 flex-shrink-0 flex items-center justify-center text-xs">👤</div>' :
-                '<div class="w-8 h-8 rounded-full bg-slate-800 border border-gray-600 flex-shrink-0 flex items-center justify-center text-xs text-white shadow-md">🧠</div>';
+                '<div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-gray-600 flex-shrink-0 flex items-center justify-center text-xs">👤</div>' :
+                '<div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-slate-800 border border-gray-600 flex-shrink-0 flex items-center justify-center text-xs text-white shadow-md">🧠</div>';
             
             const bubble = document.createElement('div');
-            bubble.className = `chat-message markdown-content ${role === 'user' ? 'bg-orange-600 rounded-2xl rounded-tr-none text-white' : 'bg-gray-700/50 rounded-2xl rounded-tl-none border border-gray-600'} p-4 text-sm`;
+            bubble.className = `chat-message markdown-content ${role === 'user' ? 'bg-orange-600 rounded-2xl rounded-tr-none text-white' : 'bg-gray-700/50 rounded-2xl rounded-tl-none border border-gray-600'} p-2.5 md:p-4 text-xs md:text-sm`;
             
             if (role === 'user') {
                 bubble.innerHTML = MarkdownParser.parse(text);
@@ -1462,7 +1583,6 @@
             div.innerHTML = avatar;
             div.appendChild(bubble);
             container.appendChild(div);
-            
             container.scrollTop = container.scrollHeight;
             
             return bubble;
@@ -1473,16 +1593,16 @@
             const id = 'loading-' + Date.now();
             const div = document.createElement('div');
             div.id = id;
-            div.className = 'flex gap-3 animate-fade-in';
+            div.className = 'flex gap-2 md:gap-3 animate-fade-in';
             div.innerHTML = `
-                <div class="w-8 h-8 rounded-full bg-slate-800 border border-gray-600 flex-shrink-0 flex items-center justify-center text-xs text-white shadow-md">🧠</div>
-                <div class="chat-message bg-gray-700/50 rounded-2xl rounded-tl-none p-3 text-sm flex items-center gap-2">
+                <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-slate-800 border border-gray-600 flex-shrink-0 flex items-center justify-center text-xs text-white shadow-md">🧠</div>
+                <div class="chat-message bg-gray-700/50 rounded-2xl rounded-tl-none p-2 md:p-3 text-xs md:text-sm flex items-center gap-1.5 md:gap-2">
                     <div class="flex gap-1">
-                        <div class="w-2 h-2 bg-orange-400 rounded-full animate-bounce"></div>
-                        <div class="w-2 h-2 bg-orange-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                        <div class="w-2 h-2 bg-orange-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                        <div class="w-1.5 h-1.5 md:w-2 md:h-2 bg-orange-400 rounded-full animate-bounce"></div>
+                        <div class="w-1.5 h-1.5 md:w-2 md:h-2 bg-orange-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                        <div class="w-1.5 h-1.5 md:w-2 md:h-2 bg-orange-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
                     </div>
-                    <span class="text-gray-400">Kimi思考中...</span>
+                    <span class="text-gray-400 text-xs">思考中...</span>
                 </div>
             `;
             container.appendChild(div);
@@ -1495,7 +1615,6 @@
             if (el) el.remove();
         }
 
-        // 搜索和过滤
         function searchElements(query) {
             const cards = document.querySelectorAll('.element-card');
             const lowerQuery = query.toLowerCase();
@@ -1510,7 +1629,7 @@
                     card.style.transform = 'scale(1.05)';
                     card.style.borderColor = '#E86C3A';
                 } else {
-                    card.style.opacity = '0.2';
+                    card.style.opacity = '0.15';
                     card.style.transform = 'scale(1)';
                     card.style.borderColor = 'rgba(75, 85, 99, 0.3)';
                 }
@@ -1519,24 +1638,22 @@
 
         function filterByCategory(category) {
             const cards = document.querySelectorAll('.element-card');
-            
             cards.forEach(card => {
                 if (category === 'all' || card.dataset.category === category) {
                     card.style.display = 'block';
-                    card.style.opacity = '1';
-                    card.style.transform = 'scale(1)';
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'scale(1)';
+                    }, 10);
                 } else {
                     card.style.opacity = '0.1';
                     setTimeout(() => {
-                        if (card.style.opacity === '0.1') {
-                            card.style.display = 'none';
-                        }
+                        if (card.style.opacity === '0.1') card.style.display = 'none';
                     }, 300);
                 }
             });
         }
 
-        // 设置管理
         function toggleSettings() {
             const modal = document.getElementById('settingsModal');
             modal.classList.toggle('hidden');
@@ -1569,25 +1686,43 @@
         }
 
         function showToast(message) {
+            const existing = document.querySelector('.toast-message');
+            if (existing) existing.remove();
+            
             const toast = document.createElement('div');
-            toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-orange-600 text-white px-6 py-3 rounded-full shadow-lg z-50 animate-float';
+            toast.className = 'toast-message fixed bottom-20 md:bottom-4 left-1/2 transform -translate-x-1/2 bg-orange-600 text-white px-4 py-2 md:px-6 md:py-3 rounded-full shadow-lg z-50 text-xs md:text-sm font-medium';
             toast.textContent = message;
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+            setTimeout(() => toast.remove(), 2500);
         }
 
         // 点击外部关闭
         document.addEventListener('click', (e) => {
-            if (e.target.id === 'settingsModal') {
-                toggleSettings();
-            }
+            if (e.target.id === 'settingsModal') toggleSettings();
         });
         
-        // 双击聊天框跳过动画
+        // 双击跳过动画
         document.getElementById('chatMessages').addEventListener('dblclick', (e) => {
             if (currentTypewriter && e.target.closest('.markdown-content')) {
                 currentTypewriter.skip();
                 currentTypewriter = null;
+            }
+        });
+        
+        // 移动端返回键处理
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const detailPanel = document.getElementById('detailPanel');
+                const aiChat = document.getElementById('aiChat');
+                const settingsModal = document.getElementById('settingsModal');
+                
+                if (!settingsModal.classList.contains('hidden')) {
+                    toggleSettings();
+                } else if (!aiChat.classList.contains('translate-x-full')) {
+                    toggleAIChat();
+                } else if (!detailPanel.classList.contains('translate-x-full') && !detailPanel.classList.contains('translate-y-full')) {
+                    closeDetail();
+                }
             }
         });
     </script>
